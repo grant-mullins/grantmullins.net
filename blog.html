@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <title>Grant Mullins - Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" >
+  <meta name="description" content="Grant Mullins – cybersecurity, computer science, math, and more." >
+  <link rel="stylesheet" href="blogstyle.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="name-block">
+        <div class="name">Grant Mullins - Blog</div>
+        <div class="tagline">
+          Cybersecurity &bull; Computer Science &bull; Mathematics
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT COLUMN -->
+      <section>
+        <!-- POSTS -->
+        <article id="about" class="card">
+          <div class="card-header">
+            <h2 class="card-title">All Posts</h2>
+          </div>
+          
+          <ul class="section-list">
+            <!-- Post 1 -->
+            <li class="section-item">
+              <div class="item-title-row">
+                <div class="post-title">
+                  <a href="blog/sans-holiday-hack-2025-path-hijacking.html" >
+                    SANS Holiday Hack 2025: Path Hijacking
+                  </a>
+                </div>
+                <div class="item-meta">1-11-2026</div>
+              </div>
+              <div class="item-description">
+                A writeup from the 2025 SANS Holiday Hack. We'll explore path hijacking in order to run a script with elevated privileges.
+              </div>
+              <div class="item-tags">
+                <span class="item-tag">SANS Holiday Hack</span>
+                <span class="item-tag">Path Hijacking</span>
+                <span class="item-tag">Linux</span>
+              </div>
+            </li>
+
+            <!-- Post 2 -->
+            <li class="section-item">
+              <div class="item-title-row">
+                <div class="post-title">
+                  <a href="blog/websites-for-the-curious-beginner.html" >
+                    Webservers for the Curious Beginner
+                  </a>
+                </div>
+                <div class="item-meta">11-24-2025</div>
+              </div>
+              <div class="item-description">
+                An introduction to how websites work. An overview of web servers and DNS, and a walkthrough of exactly how I set up this website.
+              </div>
+              <div class="item-tags">
+                <span class="item-tag">web servers</span>
+                <span class="item-tag">DNS</span>
+                <span class="item-tag">VPS</span>
+                <span class="item-tag">nginx</span>
+              </div>
+            </li>
+
+          </ul>
+
+        </article>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <section>
+        <!-- RECENT -->
+        <article id="back" class="card">
+          <div class="card-header">
+            <h2 style="margin: 0 auto;" class="card-title">
+              <a href="./index.html">Back to Main Page</a>
+            </h2>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <div>&copy; <span id="year"></span> Grant Mullins. All rights reserved. Reach me at contact.grantmullins@gmail.com</div>
+    </footer>
+  </div>
+
+  <script>
+    // Tiny helper to keep the year current
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

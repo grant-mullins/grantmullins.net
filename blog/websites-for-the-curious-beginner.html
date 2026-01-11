@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <title>Grant Mullins - Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" >
+  <meta name="description" content="Grant Mullins – cybersecurity, computer science, math, and more." >
+  <link rel="stylesheet" href="../blogstyle.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="name-block">
+        <div class="name">Grant Mullins - Blog</div>
+        <div class="tagline">
+          Cybersecurity &bull; Computer Science &bull; Mathematics
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT COLUMN -->
+      <section>
+        <article id="about" class="card post">
+          <!-- BEGIN POST CONTENT -->
+          <div class="post-content">
+            <h1 id="post-title">Websites for the Curious Beginner</h1>
+            <h2 id="introduction">Introduction</h2>
+            <p>For most people who want to build a website, their first option is a website builder. This is a great option for those without coding and technological knowledge, but it hides a lot of the intricate (and interesting!) details. The curious beginners may ask:</p>
+
+            <ul>
+              <li>What is going on behind the scenes of a website builder?</li>
+              <li>How does typing a domain name take me to a website?</li>
+              <li>Can I do what these website builders do on my own?</li>
+            </ul>
+
+            <p>The answer to the third question is yes! In this post, I’ll answer the first two questions (while pushing aside a lot of technical details) and walk through how I set up my own website.</p>
+
+            <h2 id="contents">Contents</h2>
+            <ul>
+              <li><a href="#what-is-a-website">What is a website?</a></li>
+              <li><a href="#how-do-you-get-to-a-website">How do you get to a website?</a>
+                <ul>
+                  <li><a href="#web-servers">Web servers</a></li>
+                  <li><a href="#dns">DNS</a></li>
+                </ul>
+              </li>
+              <li><a href="#website-walkthrough">Website walkthrough</a>
+                <ul>
+                  <li><a href="#set-up-a-web-server">Set up a web server</a></li>
+                  <li><a href="#buy-a-domain-name">Buy a domain name</a></li>
+                  <li><a href="#configure-dns-records">Configure DNS records</a></li>
+                </ul>
+              </li>
+              <li><a href="#appendix-1">Appendix 1: nginx on Ubuntu</a></li>
+              <li><a href="#appendix-2">Appendix 2: DNS A Record</a></li>
+            </ul>
+
+            <h2 id="what-is-a-website">What is a website?</h2>
+            <p>A website is a collection of webpages that can be navigated by following hyperlinks. A webpage, put simply, is just a file. Specifically, it is an HTML file, which means it is in a format that your web browser can read and display. In reality, there are usually multiple files involved (CSS stylesheets, scripts, images, etc.) and more complex webpages also utilize server-side scripts and APIs, but the core of a webpage is the HTML file. So when you see “website,” just think of a collection of files.</p>
+
+            <h2 id="how-do-you-get-to-a-website">How do you get to a website?</h2>
+            <p>We now know that a website is just a collection of files. So what happens when you visit a website? How does the webpage (a file) get shown to you in your web browser? There are two key systems at play: a web server and DNS.</p>
+
+            <h3 id="web-servers">Web servers</h3>
+            <p>A web server is a program on some computer that sends you files for a website. So when you visit a website, your web browser will send a request to that website’s web server. In response, the web server will send your computer the file(s) for the requested webpage.</p>
+            <p>Think of a web server as a concession stand. A worker sits at the concession stand window and waits for a customer. A customer walks up to the window and asks for some nachos. The worker goes to the kitchen, finds the requested nachos, and gives them to the customer. The analogies here are:</p>
+            
+            <ul>
+              <li>concession stand → a webserver</li>
+              <li>nachos → a webpage</li>
+              <li>customer → your web browser</li>
+            </ul>
+            <p>Now, how does the browser know where the web server is? Consider how a customer might find out where the concession stand is. They can ask another worker, maybe a security guard or another stand merchant, and get directions to the concession stand. Similarly, your web browser asks another computer for directions to the web server. This other computer is known as a DNS server, which just means it utilizes DNS (the domain name system) to give you an answer.</p>
+
+            <h3 id="dns">DNS</h3>
+            <p>DNS (the domain name system) is how your computer finds a web server for any website you visit. You give DNS a domain name, and it gives you the IP address of that domain’s web server. Using the IP address, your computer can directly ask the web server for the web page.</p>
+            <p>Suppose you type “google.com” into your URL bar. Your browser will reach out to the nearest DNS server and ask “where is the google.com web server?” If this DNS server knows where the google.com web server is, it will reply with its IP address. If it does not, it will ask another “higher-level” DNS server. The process continues until it gets to a DNS server that knows the location of the google.com web server, at which point its IP address will make its way back to your web browser.</p>
+
+            <h2 id="website-walkthrough">Website walkthrough</h2>
+            <p>There are three main steps to setting up a website. I’ll detail exactly how I completed each step when I set up my own website.</p>
+
+            <h3 id="set-up-a-web-server">Set up a web server</h3>
+            <p>We need to find a suitable computer that can host our web server, and then spin up the web server on that computer.</p>
+            <p>By “suitable,” I mean a computer with a public IP address that can be reached from the Internet. A computer on your home network may seem like a possible option, but there are a few issues:</p>
+
+            <ul>
+              <li>Your computer likely doesn’t have a public IP address. Instead, your router has a public IP address and forwards traffic to your computer via NAT (network address translation). So additional configuration is required to reach your computer from the Internet (using port forwarding).</li>
+              <li>Your ISP may disallow hosting a public web server on your home network, especially if you have a residential plan. Check your terms of service to be sure.</li>
+              <li>Your ISP likely changes the public IP address of your router regularly. So additional tools and configuration is required to continually update DNS records (using Dynamic DNS).</li>
+              <li>Exposing your home network to the Internet may be dangerous, especially if you have weak firewalls, poor network segmentation, and not enough time to update and maintain web server software.</li>
+              <li>If your internet service or power is unreliable, then your web site will have more frequent downtime.</li>
+            </ul>
+
+            <p>To avoid these issues, I opted to use a VPS (virtual private server). Think of it as your own computer that is out in the wild. It has its own public static IP address (it doesn’t change) and you have complete control over it, but you can only access it remotely (via a GUI or the terminal).</p>
+            <p>For my VPS, I got one through <a href="https://www.hostinger.com/">Hostinger</a>. They offer a VPS with 1 CPU core, 4 GB of RAM, and 50 GB of disk for $15 a month. It is a little overkill for a web server (especially one without much traffic), but you can spin up whatever services you want on it since you have full control over the VPS. I installed Ubuntu on my VPS, and I access it via SSH (the terminal).</p>
+            <p>Once you have a suitable computer, the next step is to spin up a web server. I opted to use nginx, but any web server software will work. You can follow the nginx beginner’s guide <a href="https://nginx.org/en/docs/beginners_guide.html">here</a>. You’ll need an HTML file to use for your web page, and there are many <a href="https://www.tooplate.com/">templates</a> and <a href="https://www.w3schools.com/html/">tutorials</a> available online. You can find the files on my web server on my <a href="https://github.com/grant-mullins/grantmullins.net">GitHub</a>.</p>
+
+            <h3 id="buy-a-domain-name">Buy a domain name</h3>
+            <p>Next, we need our own domain name. Since domain names need to be unique, there is an organization that oversees the assignment and transferring of domain names to individuals: the Internet Corporation for Assigned Names and Numbers (ICANN). There are several domain registrars that are accredited by ICANN from which we can buy a domain name. I opted for <a href="https://www.namecheap.com/">Namecheap</a> and bought the <a href="https://grantmullins.net">grantmullins.net</a> domain.</p>
+
+            <h3 id="configure-dns-records">Configure DNS records</h3>
+            <p>Finally, we need to link our domain name to our web server. When someone types our domain name into the URL bar, DNS needs to answer their request with the IP address of our web server. We can tell DNS which IP address to reply with by adding a DNS record. Likely using the same domain registrar from which we bought our domain name, we can add an A Record (or AAAA Record for IPv6 addresses). This record will link the IP address of our web server to our domain name (along with some other technical details). Instructions for adding an A Record on Namecheap can be found <a href="https://www.namecheap.com/support/knowledgebase/article.aspx/319/2237/how-can-i-set-up-an-a-address-record-for-my-domain/">here</a>.</p>
+            <p>That’s it! You can now set up your very own website. I hope this post gave you some insight into the workings of a technology that we use every day.</p>
+
+            <h2 id="appendix-1">Appendix 1: Configuring nginx on Ubuntu</h2>
+            <p>Once we have the IP address of our VPS, we can SSH into it and install nginx</p>
+            <pre><code class="lang-bash">apt <span class="hljs-keyword">install</span> nginx</code></pre>
+
+            <p>Ensure Nginx is running:</p>
+            <pre><code class="lang-bash"><span class="hljs-attribute">systemctl status nginx</span></code></pre>
+
+            <p>Create the directory for the domain:</p>
+            <pre><code class="lang-bash"><span class="hljs-keyword">mkdir</span> -p /<span class="hljs-keyword">var</span>/www/grantmullins.<span class="hljs-keyword">net</span>/html</code></pre>
+            <p>This will create parent directories as needed (-p), in this case the grantmullins.net directory and the html directory.</p>
+
+            <pre><code class="lang-bash"><span class="hljs-title">chown</span> -<span class="hljs-type">R</span> www-<span class="hljs-class"><span class="hljs-keyword">data</span>:www-<span class="hljs-keyword">data</span> /var/www/grantmullins.net</span></code></pre>
+            <p>This will grant ownership of <a href="http://grantmullins.net">http://grantmullins.net</a> and all sub-files (-R) to the www-data user and group. This is the user/group used by nginx.</p>
+
+            <pre><code class="lang-bash">chmod -R 755 /<span class="hljs-keyword">var</span>/www/grantmullins.<span class="hljs-keyword">net</span></code></pre>
+            <p>This will grant read-write-execute permission to the www-data user (nginx), as well as read-execute permission to the www-data group and other users, to files and subdirectories (-R) of grantmullins.net.</p>
+
+            <p>We will store the webpage HTML file at /var/www/grantmullins.net/html/index.html. Next, we create a server block:</p>
+            <pre><code class="lang-nginx">server {
+  listen 80;
+  listen [::]:80;
+
+  server_name grantmullins.<span class="hljs-keyword">net</span> www.grantmullins.<span class="hljs-keyword">net</span>;
+
+  root /<span class="hljs-keyword">var</span>/www/grantmullins.<span class="hljs-keyword">net</span>/html;
+  index index.html;
+
+  access_log /<span class="hljs-keyword">var</span>/<span class="hljs-keyword">log</span>/nginx/grantmullins.<span class="hljs-keyword">net</span>.access.<span class="hljs-keyword">log</span>;
+  error_log /<span class="hljs-keyword">var</span>/<span class="hljs-keyword">log</span>/nginx/grantmullins.<span class="hljs-keyword">net</span>.<span class="hljs-keyword">error</span>.<span class="hljs-keyword">log</span>;
+
+  location / {
+  try_files <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ =404;
+  }
+}</code></pre>
+
+            <p>We will store this file at /etc/nginx/sites-available/grantmullins.net. Finally we enable the site:</p>
+            <pre><code class="lang-bash">ln -s <span class="hljs-regexp">/etc/</span>nginx<span class="hljs-regexp">/sites-available/g</span>rantmullins.net <span class="hljs-regexp">/etc/</span>nginx<span class="hljs-regexp">/sites-enabled/</span>   </code></pre>
+
+            <p>and reload Nginx:</p>
+            <pre><code class="lang-bash"><span class="hljs-attribute">systemctl reload nginx</span></code></pre>
+
+            <p>We’ll use certbot to get a free Let’s Encrypt cert and edit our nginx configuration.</p>
+            <pre><code class="lang-bash">apt install certbot python3-certbot-nginx
+certbot --nginx -d grantmullins<span class="hljs-selector-class">.net</span> -d www<span class="hljs-selector-class">.grantmullins</span><span class="hljs-selector-class">.net</span></code></pre>
+
+            <p>Now, we’re able to use HTTPS with our web server.</p>
+
+            <h2 id="appendix-2">Appendix 2: DNS A Record</h2>
+            <p>In Namecheap’s dashboard, we can add two A Records:</p>
+            <pre><code><span class="hljs-string">Type:</span> A Record, <span class="hljs-string">Host:</span> @, <span class="hljs-string">Value:</span> <span class="hljs-number">203.0</span><span class="hljs-number">.113</span><span class="hljs-number">.1</span>, <span class="hljs-string">TTL:</span> Automatic
+<span class="hljs-string">Type:</span> A Record, <span class="hljs-string">Host:</span> www, <span class="hljs-string">Value:</span> <span class="hljs-number">203.0</span><span class="hljs-number">.113</span><span class="hljs-number">.1</span>, <span class="hljs-string">TTL:</span> Automatic</code></pre>
+
+            <p>The first record corresponds to <a href="https://grantmullins.net">grantmullins.net</a>, and the second corresponds to <a href="https://www.grantmullins.net">www.grantmullins.net</a>. Both will point to the same web server (located at 203.0.113.1). TTL (Time to Live) specifies how long DNS caches should store this record. “Automatic” tells each DNS server to use its default TTL value, but we could specify our own time instead (in seconds).</p>
+
+          </div>
+          <!-- END POST CONTENT -->
+        </article>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <section>
+        <!-- RECENT -->
+        <article id="back" class="card">
+          <div class="card-header">
+            <h2 style="margin: 0 auto;" class="card-title">
+              <a href="../blog.html">Back to Blog Posts</a>
+
+              <a href="../index.html">Back to Main Page</a>
+            </h2>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <div>&copy; <span id="year"></span> Grant Mullins. All rights reserved. Reach me at contact.grantmullins@gmail.com</div>
+    </footer>
+  </div>
+
+  <script>
+    // Tiny helper to keep the year current
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
